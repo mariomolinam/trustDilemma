@@ -5,10 +5,12 @@ class Agent(object):
     """
         This class creates agents with certain profile characteristics
         Characteristics:
-            - trustThreshold is given, homogeneuous, and set to 0.5 arbitrarily. This parameter can be adapted.
+            - trustThreshold is given, homogeneuous, and set to 0.05 arbitrarily. This parameter can be adapted.
             - a shareable subset of items
             - a unique subset of items
             - agent ID
+
+            - among others (needs completion)
     """
     # global parameter to count number of agents in the model. This parameter is dynamically
     # updated every time an agent is created.
