@@ -7,13 +7,13 @@ trustThresholdParameters = [0.9, 1.1, 10, 25]
 #file_names_weights = ['networkWeights-0.9.txt'], 'networkWeights-2.5.txt', 'networkWeights-4.txt', 'networkWeights-6.txt', 'networkWeights-8.txt', 'networkWeights-16.txt']
 
 for value in range(len(trustThresholdParameters)):
-    numberOfIterationsAgents = 10
+    numberOfIterationsAgents = 200
     store_Results = {}
     for agent in range(numberOfIterationsAgents):
         createAgents = trust_dilemma.createAgents(trustThreshold = trustThresholdParameters[value], MaxNumberOfAgents = 50)
         agents_list = createAgents['agents_list']
         totalInformationAvailable = len(createAgents['totalInformationAvailable']) + 4
-        numberOfIterationsTime = 2
+        numberOfIterationsTime = 500
         # pairs change every time
         globalInformationSystem = []
         cumulativeInformationFlow = []
