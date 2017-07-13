@@ -2,18 +2,18 @@ import trust_dilemma
 import numpy as np
 
 # Master Code
-trustThresholdParameters = [0.9, 2.5, 4, 6, 8, 16]
-file_names = ['trustThreshold-0.9.txt', 'trustThreshold-2.5.txt', 'trustThreshold-4.txt', 'trustThreshold-6.txt', 'trustThreshold-8.txt', 'trustThreshold-16.txt']
-file_names_weights = ['networkWeights-0.9.txt', 'networkWeights-2.5.txt', 'networkWeights-4.txt', 'networkWeights-6.txt', 'networkWeights-8.txt', 'networkWeights-16.txt']
+trustThresholdParameters = [0.9, 1.1, 10, 25]
+#file_names = ['trustThreshold-0.9.txt']#, 'trustThreshold-2.5.txt', 'trustThreshold-4.txt', 'trustThreshold-6.txt', 'trustThreshold-8.txt', 'trustThreshold-16.txt']
+#file_names_weights = ['networkWeights-0.9.txt'], 'networkWeights-2.5.txt', 'networkWeights-4.txt', 'networkWeights-6.txt', 'networkWeights-8.txt', 'networkWeights-16.txt']
 
 for value in range(len(trustThresholdParameters)):
-    numberOfIterationsAgents = 150
+    numberOfIterationsAgents = 10
     store_Results = {}
     for agent in range(numberOfIterationsAgents):
-        createAgents = trust_dilemma.createAgents(trustThreshold = trustThresholdParameters[value], MaxNumberOfAgents = 30)
+        createAgents = trust_dilemma.createAgents(trustThreshold = trustThresholdParameters[value], MaxNumberOfAgents = 50)
         agents_list = createAgents['agents_list']
         totalInformationAvailable = len(createAgents['totalInformationAvailable']) + 4
-        numberOfIterationsTime = 250
+        numberOfIterationsTime = 2
         # pairs change every time
         globalInformationSystem = []
         cumulativeInformationFlow = []
@@ -34,7 +34,8 @@ for value in range(len(trustThresholdParameters)):
             else:
                 store_Results[t][agent-1]
                 store_Results[t].append(p)
-    with open(file_names[value], 'w') as f:
+    file_name = 'trustThreshold-' + str(trustThresholdParameters[value]) + '.txt'
+    with open(file_name, 'w') as f:
         iterations = ''
         for i in range(1, numberOfIterationsAgents + 1):
             iterations += 'iter' + str(i) + '\t'
@@ -52,7 +53,7 @@ for value in range(len(trustThresholdParameters)):
             f.write(line)
     f.close()
     #create weights matrix
-    if agent == 149:
+    if agent == numberOfIterationsAgents - 1:
         for a in range(len(createAgents['agents_list'])):
             getWeights = createAgents['agents_list'][a].getProbabilityOfInteraction()
             if a == 0:
@@ -60,4 +61,5 @@ for value in range(len(trustThresholdParameters)):
             else:
                 matrix = np.append(matrix, getWeights, axis=1)
         # save network weights
-        np.savetxt(file_names_weights[value], matrix)
+        file_network = 'networkWeights-' + str(trustThresholdParameters[value]) + '.txt'
+        np.savetxt(file_network, matrix)
