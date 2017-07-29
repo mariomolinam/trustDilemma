@@ -1,5 +1,6 @@
 import string, random, itertools
 import numpy as np
+from scipy import stats
 
 class Agent(object):
     """
@@ -16,7 +17,7 @@ class Agent(object):
     # updated every time an agent is created.
     TotalNumberOfAgents = 0
 
-    def __init__(self, trustThreshold = 2.5, MaxNumberOfAgents = 30, alpha = 0.05):
+    def __init__(self, trustThreshold, MaxNumberOfAgents, alpha):
         self.__trustThreshold = (1.0/(MaxNumberOfAgents-1)) * trustThreshold
         self.__shareableItems = random.sample(set(list(string.ascii_uppercase)[:4]), 2)
         self.__uniqueItems =  random.sample(set(list(string.ascii_uppercase)[4:]), 1)
@@ -184,18 +185,35 @@ class Agent(object):
         else:
             self.__memoryAttractiveness[targetID] -= self.alphaParameter
 
-        return None
 
     def updateMemoryInteraction(self, targetID):
         if not self.__recordMemory:
             self.__memoryInteraction[targetID] += 1
             self.__recordMemory = True
 
+    def updateMemoryNeighbors(self, targetID):
+        self.__memoryAttractiveness[targetID] += self.alphaParameter/2
+
+
     def updateRecordMemory(self):
         self.__recordMemory = False
 
     #############################################################
     # Functions that get values from agents
+
+    def getCommonNeighbors(self, target):
+        # The arguemtn target excludes agent in current interaction.
+        # get neighbors with probability of interaction higher than the modal agent in that current agent's vector.
+        p_mode = stats.mode(self.__probabilityOfInteraction)[0]
+        p_vector = self.__probabilityOfInteraction
+
+        # neighbors is vector with values for agents selected
+        neighbors = np.where(p_vector > p_mode )[0]
+
+        # remove current agent from probability vector
+        neighbors = neighbors[neighbors!=target]
+
+        return neighbors
 
     def getSelectedTargetAgent(self):
         return self.selectedTargetAgent

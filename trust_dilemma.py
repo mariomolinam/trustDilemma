@@ -1,12 +1,14 @@
 import trust_dilemma_Agents as agents
-import time, string
+import time, string, random
+import numpy as np
 
-def createAgents(trustThreshold, MaxNumberOfAgents):
+
+def createAgents(trustThreshold, MaxNumberOfAgents, alpha):
     # First, we need to create the Agents. Create N=100 agents and have them in a list
     agents_list = []
     totalInformationAvailable = []
     for i in range(MaxNumberOfAgents):
-        agent = agents.Agent(trustThreshold=trustThreshold, MaxNumberOfAgents=MaxNumberOfAgents)
+        agent = agents.Agent(trustThreshold=trustThreshold, MaxNumberOfAgents=MaxNumberOfAgents, alpha=alpha)
         items = agent.getNewInformationStore()
         totalInformationAvailable.append(items[0])
         agents_list.append(agent)
@@ -16,7 +18,7 @@ def createAgents(trustThreshold, MaxNumberOfAgents):
     return output
 
 
-def runTrustDilemma(agents_list, totalInformationAvailable, t=0):
+def runTrustDilemma(agents_list, totalInformationAvailable, t):
 
     # store new information flow at every iteration
     globalInformationExchanged = []
@@ -35,36 +37,61 @@ def runTrustDilemma(agents_list, totalInformationAvailable, t=0):
         # print 'Target:', focal_targetAgent
     #########################################
     # SECOND, SEARCH FOR AGENTS WHO SELECTED EACH OTHER
+    # agents_provisional to be removed from list while looping
+    agents_provisional = agents_list[:]
+    # keep track of agents who were paired
     pairs = {}
-    paired_agents = []      # keep track of agents who were paired
-    for focal_agent in agents_list:
+    paired_agents = []
+    for focal_agent in agents_provisional[:]:
         # This is the target Agent selected by focal Agent in the loop
         focal_targetAgent = focal_agent.getSelectedTargetAgent()
         focalID = focal_agent.myID()
-        # print 'Focal ID:', focalID
         # Then see if someone else selected focal Agent
-        for target_agent in agents_list:
+        for target_agent in agents_provisional:
             # get target agent ID
             targetID = target_agent.myID()
+            print 'Focal ID:', focalID, 'and Target ID:', targetID
             if targetID == focalID:
                 # print 'We are the same Agent...'
                 pass
             else:
                 target_targetAgent = target_agent.getSelectedTargetAgent()
                 if (targetID == focal_targetAgent) and (target_targetAgent == focalID):
-                    print 'We have a pair!'
-                    print 'Agent:', focalID, 'and', targetID
-                    pairs[target_agent.myID()] = focal_agent # keep track of agents paired
+                    print '     We have a pair!'
+                    print '     Agent:', focalID, 'and', targetID
+                    # keep track of agents paired
+                    pairs[target_agent.myID()] = focal_agent
+                    pairs[focalID] = target_agent
+
                     # update Interaction Memory
                     focal_agent.updateMemoryInteraction(targetID)
                     target_agent.updateMemoryInteraction(focalID)
+
                     # This list avoids double counting
                     paired_agents.append(focal_agent.myID())
                     paired_agents.append(target_agent.myID())
+
+                    # Check if we have a likelable agents in common. If so, update its tie by half of alpha
+                    focal_neighbors = focal_agent.getCommonNeighbors(targetID)
+                    print 'Focal Neighbors:', focal_neighbors
+                    target_neighbors = target_agent.getCommonNeighbors(focalID)
+                    print 'Target Neighbors:', target_neighbors
+
+                    commonNeighbors = np.intersect1d(focal_neighbors, target_neighbors)
+
+                    if commonNeighbors.shape[0] != 0:
+                        focal_agent.updateMemoryNeighbors(targetID)
+                        target_agent.updateMemoryNeighbors(focalID)
                     break
+        # Remove agents as we are done searching their neighbors.
+        # Notice that that we start the loop with agents_list[:]. This is needed for the update and removal of an agent to happen while we are looping over items.
+        # We then get the index of agent and remove from list.
+        index = agents_provisional.index(focal_agent)
+        removed = agents_provisional.pop(index)
                 #else:
                     #print 'No pair found'
     print 'end loop'
+    print ' '
     # if we have more than
     # if len(pairs) > 0:
     #     if len(pairs.keys())/2 > pairs.values()[0].totalAgents():
@@ -74,6 +101,10 @@ def runTrustDilemma(agents_list, totalInformationAvailable, t=0):
     #########################################
     # THIRD, SEARCH FOR INFORMATION ITEMS AGENTS SHARE.
     # BUT ONLY IF THERE ARE PAIRS
+    print 'Pairs list:', paired_agents
+    print ' '
+    print 'Pairs dict:', pairs
+
     if len(pairs) > 0:
         pairs_exchanged = []
         for item in pairs:
@@ -113,7 +144,6 @@ def runTrustDilemma(agents_list, totalInformationAvailable, t=0):
                 # flag focal and target agent as already used
                 pairs_exchanged.append(focalID)
                 pairs_exchanged.append(targetID)
-
 
     print '#####################################################################'
     print ' '
