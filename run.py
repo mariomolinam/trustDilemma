@@ -77,5 +77,5 @@ for alpha in range(len(alpha_paramater)):
 
             matrix = np.append(matrix, agentInfo, axis=1)
             # save network weights
-            file_network = 'networkWeights-' + str(trustThresholdParameters[value]) + '-alpha-' + str(alpha_paramater[alpha] + '.txt'
+            file_network = 'networkWeights-' + str(trustThresholdParameters[value]) +'-alpha-' + str(alpha_paramater[alpha]) + '.txt'
             np.savetxt(file_network, matrix)
