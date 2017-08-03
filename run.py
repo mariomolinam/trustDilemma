@@ -2,19 +2,19 @@ import trust_dilemma
 import numpy as np
 
 # Master Code. This makes the process run
-alpha_paramater = [0.05, 0.2]
-trustThresholdParameters = [0.9, 1.1, 10, 25]
+alpha_paramater = [0.05] #, 0.2]
+trustThresholdParameters = [1,3, 5, 10, 25]
 
 for alpha in range(len(alpha_paramater)):
     for value in range(len(trustThresholdParameters)):
-        numberOfIterationsAgents = 150
+        numberOfIterationsAgents = 1
         store_Results = {}
         for agent in range(numberOfIterationsAgents):
-            createAgents = trust_dilemma.createAgents(trustThreshold = trustThresholdParameters[value], MaxNumberOfAgents = 50, alpha = alpha_paramater[alpha])
+            createAgents = trust_dilemma.createAgents(trustThreshold = trustThresholdParameters[value], MaxNumberOfAgents = 10, alpha = alpha_paramater[alpha])
             agents_list = createAgents['agents_list']
             InformationAvailable = set(createAgents['totalInformationAvailable'])   # unique information available
             totalInformationAvailable = len(InformationAvailable) + 4
-            numberOfIterationsTime = 400
+            numberOfIterationsTime = 100
             # pairs change every time
             globalInformationSystem = set()
             p = 0

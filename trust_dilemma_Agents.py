@@ -72,7 +72,7 @@ class Agent(object):
         print 'nonzeroIndex', nonzeroIndex
 
         # if nonzeroIndex is NOT zero, then previous interactions have ocurred
-        if nonzeroIndex > 0:
+        if nonzeroIndex > 0 and self.__probabilityOfInteraction[target_Agent] <= self.__trustThreshold:
             # get DELTA parameter:
             # a weight for interaction with agent j relative to all other interactions
 
@@ -94,7 +94,6 @@ class Agent(object):
                 self.__memoryAttractiveness[target_Agent] = 0
 
             print 'Gamma:', gamma
-
 
             if delta < 1:
                 self.__probabilityOfInteraction[target_Agent] = self.__probabilityOfInteraction[target_Agent] * (delta + 1) * gamma
@@ -180,7 +179,8 @@ class Agent(object):
 
         # update attractiveness vector for target agent
         if self.__attractiveness:
-            self.__memoryAttractiveness[targetID] += self.alphaParameter
+            if self.__probabilityOfInteraction[targetID] <= self.__trustThreshold:
+                self.__memoryAttractiveness[targetID] += self.alphaParameter
             self.__attractiveness = False
         else:
             self.__memoryAttractiveness[targetID] -= self.alphaParameter
@@ -188,11 +188,13 @@ class Agent(object):
 
     def updateMemoryInteraction(self, targetID):
         if not self.__recordMemory:
-            self.__memoryInteraction[targetID] += 1
+            if self.__probabilityOfInteraction[targetID] <= self.__trustThreshold:
+                self.__memoryInteraction[targetID] += 1
             self.__recordMemory = True
 
     def updateMemoryNeighbors(self, targetID):
-        self.__memoryAttractiveness[targetID] += self.alphaParameter/2
+        if self.__probabilityOfInteraction[targetID] <= self.__trustThreshold:
+            self.__memoryAttractiveness[targetID] += self.alphaParameter/2
 
 
     def updateRecordMemory(self):
