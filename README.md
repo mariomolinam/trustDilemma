@@ -4,4 +4,4 @@
 
 The repository contains `python` code for the Agent-based model and some `R` code for the data analysis. The file `run.py` creates some datasets for different levels of trust thresholds among agents. Consider that this code is not very efficient and it may take several hours to run, depending on the sample size of agents and the number of iterations.
 
-You can read our brief report by clicking <a href="http://zia.hss.cmu.edu/econ/homework17/5/index.html" target="_blank">on this link</a>. Keep in mind that this is still work in progress.
+You can read our brief report by clicking <a href="https://jhmsfi.github.io/JHMWeb/econ/homework17/5/index.html" target="_blank">on this link</a>. Keep in mind that this is still work in progress.
